@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 exports.getAllUser = (req, res) => {
   res
     .status(500)

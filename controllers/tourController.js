@@ -1,12 +1,12 @@
-const Product = require('../models/productModel');
+const Tour = require('../models/tourModel');
 
-exports.getAllProducts = async (req, res) => {
+exports.getAllTours = async (req, res) => {
   try {
-    const products = await Product.find();
+    const tours = await Tour.find();
     res.status(200).json({
       status: 'succes',
-      results: products.length,
-      data: { products },
+      results: tours.length,
+      data: { tours },
       requestedAt: req.requestTime,
     });
   } catch (err) {
@@ -17,11 +17,11 @@ exports.getAllProducts = async (req, res) => {
   }
 };
 
-exports.getProduct = async (req, res) => {
+exports.getTour = async (req, res) => {
   try {
     //Product.findOne({_id:req.params.id});
-    const product = await Product.findById(req.params.id);
-    res.status(200).json({ status: 'succes', data: { product } });
+    const tour = await Tour.findById(req.params.id);
+    res.status(200).json({ status: 'succes', data: { tour } });
   } catch (err) {
     res.status(404).json({
       status: 'fail',
@@ -30,16 +30,16 @@ exports.getProduct = async (req, res) => {
   }
 };
 
-exports.createProduct = async (req, res) => {
+exports.createTour = async (req, res) => {
   try {
     // const newProduct = new Product({});
     // newProdcut.save();
 
-    const newProduct = await Product.create(req.body);
+    const newTour = await Tour.create(req.body);
 
     res.status(201).json({
       status: 'success',
-      data: { product: newProduct },
+      data: { tour: newTour },
     });
   } catch (err) {
     res.status(404).json({
@@ -49,16 +49,16 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-exports.updateProduct = async (req, res) => {
+exports.updateTour = async (req, res) => {
   // PATCH
   try {
-    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
       new: true, // true = return the new update document , false = return the original document
       runValidators: true,
     });
     res.status(200).json({
       status: 'succes',
-      data: product,
+      data: tour,
     });
   } catch (err) {
     res.status(404).json({
@@ -68,8 +68,8 @@ exports.updateProduct = async (req, res) => {
   }
 };
 
-exports.deleteProduct = async (req, res) => {
-  await Product.findByIdAndDelete(req.params.id);
+exports.deleteTour = async (req, res) => {
+  await Tour.findByIdAndDelete(req.params.id);
   try {
     res.status(204).json({ status: 'succes', data: null });
   } catch (err) {

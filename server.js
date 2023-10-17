@@ -32,15 +32,16 @@ dbConnect().catch((err) => console.log(err));
 // console.log(app.get('env')); // express
 // console.log(process.env); //core module node
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: [true, 'A user must have a name'] },
-  surname: { type: String, required: [true, 'A user must have a surname'] },
-  email: {
-    type: String,
-    required: [true, 'A user must have a email'],
-    unique: true,
-  },
-});
+// const userSchema = new mongoose.Schema({
+//   name: { type: String, required: [true, 'A user must have a name'] },
+//   surname: { type: String, required: [true, 'A user must have a surname'] },
+//   email: {
+//     type: String,
+//     required: [true, 'A user must have a email'],
+//     unique: true,
+//   },
+//}
+//);
 
 // const User = mongoose.model('User', userSchema);
 

@@ -8,13 +8,13 @@ const router = express.Router();
 
 router
   .route('/')
-  .get(tourController.getAllProducts)
-  .post(tourController.createProduct);
+  .get(tourController.getAllTours)
+  .post(tourController.createTour);
 
 router
   .route('/:id')
-  .get(tourController.getProduct)
-  .patch(tourController.updateProduct)
-  .delete(tourController.deleteProduct);
+  .get(tourController.getTour)
+  .patch(tourController.updateTour)
+  .delete(tourController.deleteTour);
 
 module.exports = router;
