@@ -84,16 +84,6 @@ const tourSchema = new mongoose.Schema(
   },
 );
 
-tourSchema.virtual('durationWeeks').get(function () {
-  return this.duration / 7;
-});
-
-// DOCUMENT MIDDLEWARE: runs before .save() and .create()
-tourSchema.pre('save', function (next) {
-  this.slug = slugify(this.name, { lower: true });
-  next();
-});
-
 // tourSchema.pre('save', function(next) {
 //   console.log('Will save document...');
 //   next();
@@ -127,6 +117,12 @@ tourSchema.pre('aggregate', function (next) {
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+// DOCUMENT MIDDLEWARE: runs before .save() and .create()
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
