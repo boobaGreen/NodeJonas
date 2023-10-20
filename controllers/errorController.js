@@ -1,4 +1,23 @@
 //Global Error Handling Middleware - 4 argument express recognize is a error middleware
+const AppError = require('../utils/appError');
+
+const handleCastErrorDB = (err) => {
+  const message = `Invalid ${err.path}: ${err.value}`;
+  return new AppError(message, 400);
+};
+const handleDuplicateFieldsDB = (err) => {
+  const key = { ...Object.keys(err.keyValue) };
+  const value = { ...Object.values(err.keyValue) };
+  const message = `Duplicate field with field '${key[0]}' : '${value[0]}'. Use another ${key[0]} }`;
+  return new AppError(message, 400);
+};
+
+const hadleValidationErrorDB = (err) => {
+  const errors = Object.values(err.errors).map((el) => el.message);
+  const message = `Invalid input data. ${errors.join('. ')}`;
+  return new AppError(message, 400);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -32,6 +51,12 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    sendErrorProduction(err, res);
+    let error = { ...err };
+    error.name = err.name;
+    if (error.name === 'CastError') error = handleCastErrorDB(error); // "CastError" mongoose when _id for find is no valide
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error);
+    if (error.name === 'ValidationError') error = hadleValidationErrorDB(error);
+
+    sendErrorProduction(error, res); // send to client
   }
 };
