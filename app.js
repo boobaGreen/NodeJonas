@@ -3,10 +3,10 @@ const morgan = require('morgan');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const tourRouter = require('./routes/tourRoutes');
-// const userRouter = require('./routes/userRoutes');
+const userRouter = require('./routes/userRoutes');
 
 const app = express();
-// NOTE MIDLLEWAREs
+// NOTE 1) MIDLLEWAREs
 console.log('process.env.NODE_ENV = ', process.env.NODE_ENV);
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
@@ -16,13 +16,14 @@ app.use(express.json()); // Middleware add the data from the body to the request
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(req.headers);
   next();
 });
 
-// NOTE ROUTES
+// NOTE 2) ROUTES
 
 app.use('/api/v1/tours', tourRouter);
-// app.use('/api/v1/users', userRouter);
+app.use('/api/v1/users', userRouter);
 
 // set route for all no match routes
 app.all('*', (req, res, next) => {
