@@ -12,11 +12,16 @@ const handleDuplicateFieldsDB = (err) => {
   return new AppError(message, 400);
 };
 
-const hadleValidationErrorDB = (err) => {
+const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data. ${errors.join('. ')}`;
   return new AppError(message, 400);
 };
+const handleJWTError = () =>
+  new AppError('Invalid token. Please log in again.', 401);
+
+const handleJWTExpiredError = () =>
+  new AppError('Your token has expired! Please log in again', 401);
 
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
@@ -26,6 +31,7 @@ const sendErrorDev = (err, res) => {
     stack: err.stack,
   });
 };
+
 const sendErrorProduction = (err, res) => {
   // Operational Error ,trusted error : send message to client
   if (err.isOperational) {
@@ -52,11 +58,15 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
-    error.name = err.name;
+
+    error.name = err.name; // ***** aggiunta di utente udemy si perde il messaggio !!!!!
+    error.message = err.message; // ***** aggiunta mia altrimenti si perde il messaggio !!!!!
     if (error.name === 'CastError') error = handleCastErrorDB(error); // "CastError" mongoose when _id for find is no valide
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
-    if (error.name === 'ValidationError') error = hadleValidationErrorDB(error);
-
+    if (error.name === 'ValidationError')
+      error = handleValidationErrorDB(error);
+    if (error.name === 'JsonWebTokenError') error = handleJWTError();
+    if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
     sendErrorProduction(error, res); // send to client
   }
 };
