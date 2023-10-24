@@ -1,7 +1,8 @@
 const Tour = require('../models/tourModel');
 const APIFeatures = require('../utils/apiFeatures');
 const catchAsync = require('../utils/catchAsync');
-const AppError = require('../utils/appError');
+//const AppError = require('../utils/appError');
+const factory = require('./handlerFactroy');
 
 exports.aliasTopTours = async (req, res, next) => {
   req.query.limit = '5';
@@ -10,6 +11,7 @@ exports.aliasTopTours = async (req, res, next) => {
   next();
 };
 
+// OLD VERSION BEFORE REFACTORING
 exports.getAllTours = catchAsync(async (req, res, next) => {
   // EXECUTE QUERY
   const features = new APIFeatures(Tour.find(), req.query)
@@ -27,50 +29,22 @@ exports.getAllTours = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getTour = catchAsync(async (req, res, next) => {
-  //Product.findOne({_id:req.params.id});
-  const tour = await Tour.findById(req.params.id).populate('reviews');
-  if (!tour) {
-    return next(new AppError('No tour found with taht ID', 404));
-  }
-  res.status(200).json({ status: 'succes', data: { tour } });
-});
+// exports.getTour = catchAsync(async (req, res, next) => {
+//   //Product.findOne({_id:req.params.id});
+//   const tour = await Tour.findById(req.params.id).populate('reviews');
+//   if (!tour) {
+//     return next(new AppError('No tour found with taht ID', 404));
+//   }
+//   res.status(200).json({ status: 'succes', data: { tour } });
+// });
 
-exports.createTour = catchAsync(async (req, res, next) => {
-  // const newProduct = new Product({});
-  // newProdcut.save();
-
-  const newTour = await Tour.create(req.body);
-
-  res.status(201).json({
-    status: 'success',
-    data: { tour: newTour },
-  });
-});
-
-exports.updateTour = catchAsync(async (req, res, next) => {
-  // PATCH
-
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true, // true = return the new update document , false = return the original document
-    runValidators: true,
-  });
-  if (!tour) {
-    return next(new AppError('No tour found with taht ID', 404));
-  }
-  res.status(200).json({
-    status: 'succes',
-    data: tour,
-  });
-});
-
-exports.deleteTour = catchAsync(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id);
-  if (!tour) {
-    return next(new AppError('No tour found with taht ID', 404));
-  }
-  res.status(204).json({ status: 'succes', data: null });
-});
+// new version with factory file
+exports.getAllTours = factory.getAll(Tour);
+exports.getTour = factory.getOne(Tour, { path: 'reviews' });
+exports.createTour = factory.createOne(Tour);
+// ps DONT update passwords with this
+exports.updateTour = factory.updateOne(Tour);
+exports.deleteTour = factory.deleteOne(Tour);
 
 exports.getToursStats = catchAsync(async (req, res) => {
   const stats = await Tour.aggregate([
@@ -128,3 +102,41 @@ exports.getMonthlyPlan = catchAsync(async (req, res, next) => {
     data: plan,
   });
 });
+
+// Old version now in factoryController.js
+// exports.updateTour = catchAsync(async (req, res, next) => {
+//   // PATCH
+
+//   const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+//     new: true, // true = return the new update document , false = return the original document
+//     runValidators: true,
+//   });
+//   if (!tour) {
+//     return next(new AppError('No tour found with taht ID', 404));
+//   }
+//   res.status(200).json({
+//     status: 'succes',
+//     data: tour,
+//   });
+// });
+
+// old version withot factory
+// exports.deleteTour = catchAsync(async (req, res, next) => {
+//   const tour = await Tour.findByIdAndDelete(req.params.id);
+//   if (!tour) {
+//     return next(new AppError('No tour found with taht ID', 404));
+//   }
+//   res.status(204).json({ status: 'succes', data: null });
+// });
+// OLD VERSION NO handleFactory file
+// exports.createTour = catchAsync(async (req, res, next) => {
+//   // const newProduct = new Product({});
+//   // newProdcut.save();
+
+//   const newTour = await Tour.create(req.body);
+
+//   res.status(201).json({
+//     status: 'success',
+//     data: { tour: newTour },
+//   });
+// });
